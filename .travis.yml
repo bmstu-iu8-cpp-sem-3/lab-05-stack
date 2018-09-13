@@ -20,12 +20,12 @@ install:
   # C++17
   - sudo apt-get install -qq g++-7
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-  - eval "CC=g++6 && CXX=g++7"
+  - eval "CC=/usr/bin/gcc && CXX=/usr/bin/g++"
 
 script:
   - chmod 777 ./cpplint.py
   - ( for file in $(find ./ -name "*.cpp"); do ./cpplint.py $file || exit; done );
   - mkdir build && cd build
-  - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .. && make
+  - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=gold .. && make
   - ( for file in $(find ../ -name "*.cpp"); do echo $file; clang-check -analyze $file -p ./ || exit; done );
   - ./executable
