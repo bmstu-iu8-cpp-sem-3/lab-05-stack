@@ -7,7 +7,7 @@ template <typename T>
 class stack
 {
  public:
-  void push(const T& value);
+  void push(T&& value);
   void push(T value);
   void pop();
   const T& head() const;
