@@ -6,7 +6,7 @@
 template <typename T>
 class stack
 {
- public:
+public:
   void push(T&& value);
   void push(T value);
   void pop();
@@ -24,7 +24,7 @@ class stack
 template <typename T>
 class stack
 {
- public:
+public:
   template <typename ... Args>
   void push_emplace(Args&&... value);
   T& head() const;
