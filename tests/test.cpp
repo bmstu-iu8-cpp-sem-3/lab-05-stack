@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <string>
 
 #include "Stack.h"
 
@@ -29,7 +30,7 @@ TEST(Stack, Constructor_Rvalue) {
   EXPECT_TRUE(st.size() == 0);
 }
 
-TEST(Stack, head){
+TEST(Stack, head) {
   Stack<int> st;
   st.push(5);
   EXPECT_TRUE(st.head() == 5);
@@ -48,7 +49,7 @@ TEST(Stack, push_lvalue) {
 
 TEST(Stack, push_rvalue) {
   Stack<double> st;
-  double value =12;
+  double value = 12;
   st.push(std::move(5));
   st.push(std::move(value));
 
@@ -66,4 +67,16 @@ TEST(Stack, pop) {
   st.pop();
   EXPECT_TRUE(st.head() == 5);
   EXPECT_TRUE(st.size() == 1);
+}
+TEST(Stack, push_emplace) {
+  Stack<std::string> st;
+  st.push_emplace("1");
+
+  EXPECT_TRUE(st.head() == "1");
+  EXPECT_TRUE(st.size() == 1);
+
+  st.push_emplace("top");
+
+  EXPECT_TRUE(st.head() == "top");
+  EXPECT_TRUE(st.size() == 2);
 }

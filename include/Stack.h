@@ -12,13 +12,27 @@ template <typename T>
 struct Element {
   T data;
   Element* prev;
+  Element();
+  Element(T&& value, Element<T>* p);
+  Element(const T& value, Element<T>* p);
 };
 template <typename T>
-class Stack {
- public:
-  Element<T>* head_;
-  std::size_t size_;
+Element<T>::Element() :prev(nullptr) {}
+template <typename T>
+Element<T>::Element(T&& value, Element<T>* p)
+    : data(std::move(value)), prev(p) {}
 
+template <typename T>
+Element<T>::Element(const T& value, Element<T>* p) : data(value), prev(p) {}
+
+
+template <typename T>
+class Stack {
+  Element<T>* head_;
+
+
+ public:
+  std::size_t size_;
   Stack();
   ~Stack();
 
@@ -33,6 +47,9 @@ class Stack {
   void push(const T& value);
   void pop();
   const T& head() const;
+
+  template <typename... Args>
+  void push_emplace(Args&&... value);
 };
 
 template <typename T>
@@ -116,6 +133,12 @@ void Stack<T>::pop() {
     }
   }
   delete old_top;
+}
+template <typename T>
+template <typename... Args>
+void Stack<T>::push_emplace(Args&&... value) {
+  head_ = new Element<T>{T{std::forward<Args>(value)...}, head_};
+  size_++;
 }
 
 #endif  // LAB_05_STACK_STACK_H
