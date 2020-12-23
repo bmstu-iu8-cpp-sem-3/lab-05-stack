@@ -22,12 +22,13 @@ class Stack {
   Stack();
   ~Stack();
 
-  Stack(Stack const& stack);
-  Stack(Stack&& stack);
+  Stack(const Stack& stack) = delete;
+  Stack(Stack&& stack) noexcept;
 
-  Stack& operator=(Stack const& stack);
-  Stack& operator=(Stack&& stack);
+  Stack& operator=(const Stack& stack) = delete;
+  Stack& operator=(Stack&& stack) noexcept;
 
+  std::size_t size() const;
   void push(T&& value);
   void push(const T& value);
   void pop();
@@ -48,14 +49,32 @@ Stack<T>::~Stack<T>() {
       auto next = top->prev;
       delete top;
       top = next;
+      --size_;
     }
   }
 }
 
 template <typename T>
+Stack<T>::Stack(Stack<T>&& stack) noexcept {
+  size_ = 0;
+  head_ = nullptr;
+  std::swap(head_, stack.head_);
+  std::swap(size_, stack.size_);
+}
+
+template <typename T>
+Stack<T>& Stack<T>::operator=(Stack<T>&& stack) noexcept {
+  if (this != &stack) {
+    std::swap(head_, stack.head_);
+    std::swap(size_, stack.size_);
+  }
+  return *this;
+}
+
+template <typename T>
 void Stack<T>::push(T&& value) {
   Element<T>* newElement = new Element<T>;
-  newElement->data = value;
+  newElement->data = std::move(value);
   size_++;
   newElement->prev = head_;
   head_ = newElement;
@@ -65,19 +84,23 @@ template <typename T>
 void Stack<T>::push(const T& value) {
   Element<T>* new_element = new Element<T>;
   new_element->data = std::move(value);
-  ++size_;
+  size_++;
   new_element->prev = head_;
   head_ = new_element;
 }
 
 template <typename T>
 const T& Stack<T>::head() const {
-  if (!head_)
+  if (size_)
     return head_->data;
   else
     throw std::invalid_argument("Stack is empty");
 }
 
+template <typename T>
+std::size_t Stack<T>::size() const {
+  return size_;
+}
 template <typename T>
 void Stack<T>::pop() {
   auto old_top = head_;
